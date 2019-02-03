@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+</head>
+<body>
+<h1>Blog</h1>
+
+{% for p in posts %}
+<h3>{{ p.title }}</h3>
+<h4>{{ p.created }} by {{ p.author }}</h4>
+<p>{{ p.content }}</p>
+{% endfor %}
+</body>
+</html>
