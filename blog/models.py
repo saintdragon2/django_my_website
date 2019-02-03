@@ -9,3 +9,7 @@ class Post(models.Model):
     created = models.DateTimeField()
     author = models.ForeignKey(User, on_delete=True)
 
+    def __str__(self):
+        return '{} :: {}'.format(self.title, self.author)
+
+
