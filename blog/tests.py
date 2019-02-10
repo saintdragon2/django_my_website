@@ -36,9 +36,6 @@ class TestView(TestCase):
         self.assertEqual(title.text, 'Blog')
 
         self.check_navbar(soup)
-        # navbar = soup.find('div', id='navbar')
-        # self.assertIn('Blog', navbar.text)
-        # self.assertIn('About me', navbar.text)
 
         self.assertEqual(Post.objects.count(), 0)
         self.assertIn('아직 게시물이 없습니다.', soup.body.text)
@@ -57,6 +54,9 @@ class TestView(TestCase):
         body = soup.body
         self.assertNotIn('아직 게시물이 없습니다.', body.text)
         self.assertIn(post_000.title, body.text)
+
+        post_000_read_more_btn = body.find('a', id='read-more-post-{}'.format(post_000.pk))
+        self.assertEqual(post_000_read_more_btn['href'], post_000.get_absolute_url())
 
     def test_post_detail(self):
         post_000 = create_post(
@@ -78,3 +78,11 @@ class TestView(TestCase):
         self.assertEqual(title.text, '{} - Blog'.format(post_000.title))
 
         self.check_navbar(soup)
+
+        body = soup.body
+
+        main_div = body.find('div', id='main_div')
+        self.assertIn(post_000.title, main_div.text)
+        self.assertIn(post_000.author.username, main_div.text)
+
+        self.assertIn(post_000.content, main_div.text)
