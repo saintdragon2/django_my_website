@@ -102,18 +102,20 @@
             </div>
 
             <!-- Categories Widget -->
-            <div class="card my-4">
+            <div class="card my-4" id="category-card">
                 <h5 class="card-header">Categories</h5>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6">
                             <ul class="list-unstyled mb-0">
                                 <li>
-                                    <a href="#">Web Design</a>
+                                    <a href="#">미분류 ({{ posts_without_category }})</a>
                                 </li>
+                                {% for category in category_list %}
                                 <li>
-                                    <a href="#">HTML</a>
+                                    <a href="#">{{ category.name }} ({{ category.post_set.count }})</a>
                                 </li>
+                                {% endfor %}
                                 <li>
                                     <a href="#">Freebies</a>
                                 </li>
