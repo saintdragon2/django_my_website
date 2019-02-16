@@ -1,6 +1,7 @@
 {% extends 'blog/base.html' %}
+
 {% block content %}
-    <h1>Blog</h1>
+    <h1>Blog {% if category %}<small class="text-muted">: {{ category }}</small>{% endif %}</h1>
     {% if object_list.exists %}
         {% for p in object_list %}
             <!-- Blog Post -->

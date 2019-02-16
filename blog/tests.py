@@ -11,6 +11,9 @@ def create_category(name='life', description=''):
         description=description
     )
 
+    category.slug = category.name.replace(' ', '-').replace('/', '')
+    category.save()
+
     return category
 
 
@@ -70,7 +73,6 @@ class TestView(TestCase):
         self.assertIn('미분류 (1)', category_card.text)  # 미분류 (1) 있어야 함
         self.assertIn('정치/사회 (1)', category_card.text)  # 정치/사회 (1) 있어야 함
 
-
     def test_post_list_no_post(self):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
@@ -78,7 +80,7 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         title = soup.title
 
-        self.assertEqual(title.text, 'Blog')
+        self.assertIn(title.text, 'Blog')
 
         self.check_navbar(soup)
 
@@ -86,7 +88,6 @@ class TestView(TestCase):
         self.assertIn('아직 게시물이 없습니다.', soup.body.text)
 
     def test_post_list_with_post(self):
-
         post_000 = create_post(
             title='The first post',
             content='Hello World. We are the world.',
@@ -115,7 +116,7 @@ class TestView(TestCase):
         self.check_right_side(soup)
 
         # main_div에는
-        main_div = soup.find('div', id='main_div')
+        main_div = soup.find('div', id='main-div')
         self.assertIn('정치/사회', main_div.text)  # '정치/사회' 있어야 함
         self.assertIn('미분류', main_div.text)  # '미분류' 있어야 함
 
@@ -149,10 +150,62 @@ class TestView(TestCase):
 
         body = soup.body
 
-        main_div = body.find('div', id='main_div')
+        main_div = body.find('div', id='main-div')
         self.assertIn(post_000.title, main_div.text)
         self.assertIn(post_000.author.username, main_div.text)
 
         self.assertIn(post_000.content, main_div.text)
 
         self.check_right_side(soup)
+
+    def test_post_list_by_category(self):
+        category_politics = create_category(name='정치/사회')
+
+        post_000 = create_post(
+            title='The first post',
+            content='Hello World. We are the world.',
+            author=self.author_000,
+        )
+
+        post_001 = create_post(
+            title='The second post',
+            content='Second Second Second',
+            author=self.author_000,
+            category=category_politics
+        )
+
+        response = self.client.get(category_politics.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        main_div = soup.find('div', id='main-div')
+        self.assertNotIn('미분류', main_div.text)
+        self.assertIn(category_politics.name, main_div.text)
+
+    def test_post_list_no_category(self):
+        category_politics = create_category(name='정치/사회')
+
+        post_000 = create_post(
+            title='The first post',
+            content='Hello World. We are the world.',
+            author=self.author_000,
+        )
+
+        post_001 = create_post(
+            title='The second post',
+            content='Second Second Second',
+            author=self.author_000,
+            category=category_politics
+        )
+
+        response = self.client.get('/blog/category/_none/')
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        main_div = soup.find('div', id='main-div')
+        self.assertIn('미분류', main_div.text)
+        self.assertNotIn(category_politics.name, main_div.text)
+
+
