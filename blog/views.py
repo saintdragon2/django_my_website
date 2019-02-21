@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Post, Category
+from .models import Post, Category, Tag
 from django.views.generic import ListView, DetailView
 
 
@@ -24,6 +24,23 @@ class PostDetail(DetailView):
         context = super(PostDetail, self).get_context_data(**kwargs)
         context['category_list'] = Category.objects.all()
         context['posts_without_category'] = Post.objects.filter(category=None).count()
+
+        return context
+
+
+class PostListByTag(ListView):
+    def get_queryset(self):
+        tag_slug = self.kwargs['slug']
+        tag = Tag.objects.get(slug=tag_slug)
+
+        return tag.post_set.order_by('-created')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(type(self), self).get_context_data(**kwargs)
+        context['category_list'] = Category.objects.all()
+        context['posts_without_category'] = Post.objects.filter(category=None).count()
+        tag_slug = self.kwargs['slug']
+        context['tag'] = Tag.objects.get(slug=tag_slug)
 
         return context
 
