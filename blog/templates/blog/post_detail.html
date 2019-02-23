@@ -63,7 +63,11 @@
         <div class="media mb-4" id="comment-id-{{ comment.pk }}">
             <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
             <div class="media-body">
-                <h5 class="mt-0">{{ comment.author }}</h5>
+                {% if comment.author == request.user %}
+                <button class="btn btn-sm btn-info float-right">edit</button>
+                <button class="btn btn-sm btn-warning float-right">delete</button>
+                {% endif %}
+                <h5 class="mt-0">{{ comment.author }} <small class="text-muted">{{ comment.created_at }}</small></h5>
                 {{ comment.get_markdown_content | safe }}
             </div>
         </div>
