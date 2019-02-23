@@ -321,6 +321,15 @@ class TestView(TestCase):
         self.assertIn(post_000.title, main_div.text)
         self.assertNotIn(post_001.title, main_div.text)
 
+    def test_post_create(self):
+        response = self.client.get('/blog/create/')
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+
+
+
     def test_post_update(self):
         post_000 = create_post(
             title='The first post',

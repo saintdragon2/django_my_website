@@ -37,7 +37,7 @@ class Post(models.Model):
 
     head_image = models.ImageField(upload_to='blog/%Y/%m/%d/', blank=True)
 
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=True)
 
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL)

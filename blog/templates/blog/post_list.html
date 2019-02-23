@@ -1,6 +1,10 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    {% if user.is_authenticated %}
+        <button class="btn btn-primary btn-sm float-right" onclick="location.href='/blog/create/'">New Post</button>
+    {% endif %}
+
     <h1 id="blog-list-title">
         Blog
         {% if category %}<small class="text-muted">: {{ category }}</small>{% endif %}
