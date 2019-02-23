@@ -60,3 +60,6 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     text = MarkdownxField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def get_markdown_content(self):
+        return markdown(self.text)
