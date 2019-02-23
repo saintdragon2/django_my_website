@@ -31,11 +31,11 @@
 
     <!-- Preview Image -->
     {% if object.head_image %}
-    <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="">
+    <img class="img-fluid rounded" src="{{ object.head_image.url }}" alt="{{ object.title }}">
     {% endif %}
 
     <!-- Post Content -->
-    {{ object.content }}
+    {{ object.get_markdown_content | safe }}
 
     <br/>
     {% for tag in object.tags.all %}
