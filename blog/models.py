@@ -63,3 +63,6 @@ class Comment(models.Model):
 
     def get_markdown_content(self):
         return markdown(self.text)
+
+    def get_absolute_url(self):
+        return self.post.get_absolute_url() + '#comment-id-{}'.format(self.pk)
