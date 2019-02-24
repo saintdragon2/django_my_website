@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="{% static 'blog/bootstrap/bootstrap.css' %}" media="screen">
     <link rel="stylesheet" href="{% static 'blog/_assets/css/custom.min.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
 
@@ -69,14 +70,55 @@
             </ul>
 
             <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#" target="_blank">공사중</a>
-                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="download">{{ user }} <span class="caret"></span></a>
+                        <div class="dropdown-menu" aria-labelledby="download">
+                            {#                        <a class="dropdown-item" href="https://jsfiddle.net/bootswatch/3he50zsf/">Open in JSFiddle</a>#}
+                            {#                        <div class="dropdown-divider"></div>#}
+                            {#                        <a class="dropdown-item" href="../4/simplex/bootstrap.min.css">bootstrap.min.css</a>#}
+                            {#                        <a class="dropdown-item" href="../4/simplex/bootstrap.css">bootstrap.css</a>#}
+                            {#                        <div class="dropdown-divider"></div>#}
+                            {#                        <a class="dropdown-item" href="../4/simplex/_variables.scss">_variables.scss</a>#}
+                            <a class="dropdown-item" href="/accounts/logout/">Log out</a>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">
+                            Log in
+                        </button>
+                    </li>
+                {% endif %}
             </ul>
 
         </div>
     </div>
 </div>
+
+{% load socialaccount %}
+
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Please Log in</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a role="button" class="btn btn-primary" href="{% provider_login_url 'google' %}"><i class="fab fa-google"></i> Log in with Google</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="container">
 
@@ -109,9 +151,9 @@
                         <div class="col-lg-6">
                             <ul class="list-unstyled mb-0">
                                 {% for category in category_list %}
-                                <li>
-                                    <a href="{{ category.get_absolute_url }}">{{ category.name }} ({{ category.post_set.count }})</a>
-                                </li>
+                                    <li>
+                                        <a href="{{ category.get_absolute_url }}">{{ category.name }} ({{ category.post_set.count }})</a>
+                                    </li>
                                 {% endfor %}
                                 <li>
                                     <a href="/blog/category/_none/">미분류 ({{ posts_without_category }})</a>
