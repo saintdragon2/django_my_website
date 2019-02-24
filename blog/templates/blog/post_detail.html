@@ -21,7 +21,7 @@
         by
         <a href="#">{{ object.author.username }}</a>
     </p>
-{% if request.user == object.author %}
+    {% if request.user == object.author %}
         <button type="button" class="btn btn-sm btn-outline-secondary float-right" onclick="location.href='{{ object.get_update_url }}'">EDIT</button>
     {% endif %}
     <hr>
@@ -33,7 +33,7 @@
 
     <!-- Preview Image -->
     {% if object.head_image %}
-    <img class="img-fluid rounded" src="{{ object.head_image.url }}" alt="{{ object.title }}">
+        <img class="img-fluid rounded" src="{{ object.head_image.url }}" alt="{{ object.title }}">
     {% endif %}
 
     <!-- Post Content -->
@@ -60,18 +60,43 @@
 
     <div id="comment-list">
         {% for comment in object.comment_set.all %}
-        <div class="media mb-4" id="comment-id-{{ comment.pk }}">
-            <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-            <div class="media-body">
-                {% if comment.author == request.user %}
-                <button class="btn btn-sm btn-info float-right">edit</button>
-                <button class="btn btn-sm btn-warning float-right">delete</button>
-                {% endif %}
-                <h5 class="mt-0">{{ comment.author }} <small class="text-muted">{{ comment.created_at }}</small></h5>
-                {{ comment.get_markdown_content | safe }}
+            <div class="media mb-4" id="comment-id-{{ comment.pk }}">
+                <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
+                <div class="media-body">
+                    {% if comment.author == request.user %}
+                        <button class="btn btn-sm btn-info float-right">edit</button>
+                        <button class="btn btn-sm btn-warning float-right" data-toggle="modal" data-target="#deleteCommentModal-{{ comment.pk }}">delete</button>
+                    {% endif %}
+                    <h5 class="mt-0">{{ comment.author }} <small class="text-muted">{{ comment.created_at }}</small></h5>
+                    {{ comment.get_markdown_content | safe }}
+                </div>
             </div>
-        </div>
         {% endfor %}
     </div>
-    
+
+    {% for comment in object.comment_set.all %}
+        {% if user == comment.author %}
+            <!-- Modal -->
+            <div class="modal fade" id="deleteCommentModal-{{ comment.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">정말로 삭제하시겠습니까?</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ comment.get_markdown_content | safe  }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='/blog/delete_comment/{{ comment.pk }}/'">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
 {% endblock %}
