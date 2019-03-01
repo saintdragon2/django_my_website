@@ -207,6 +207,38 @@ class TestView(TestCase):
         post_card_000 = main_div.find('div', id='post-card-{}'.format(post_000.pk))
         self.assertIn('#america', post_card_000.text) # Tag가 해당 post의 card마다 있다.
 
+    def test_pagination(self):
+        # post가 적은 경우
+        for i in range(0, 3):
+            post = create_post(
+                title='The post No. {}'.format(i),
+                content='Content {}'.format(i),
+                author=self.author_000,
+            )
+
+        response = self.client.get('/blog/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        self.assertNotIn('Older', soup.body.text)
+        self.assertNotIn('Newer', soup.body.text)
+
+        for i in range(3, 10):
+            post = create_post(
+                title='The post No. {}'.format(i),
+                content='Content {}'.format(i),
+                author=self.author_000,
+            )
+
+        response = self.client.get('/blog/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        self.assertIn('Older', soup.body.text)
+        self.assertIn('Newer', soup.body.text)
+
+
+
     def test_post_detail(self):
         category_politics = create_category(name='정치/사회')
 
