@@ -114,6 +114,17 @@ def new_comment(request, pk):
         return redirect('/blog/')
 
 
+class CommentUpdate(UpdateView):
+    model = Comment
+    form_class = CommentForm
+
+    def get_object(self, queryset=None):
+        comment = super(CommentUpdate, self).get_object()
+        if comment.author != self.request.user:
+            raise PermissionError('Comment 수정 권한이 없습니다.')
+        return comment
+
+
 def delete_comment(request, pk):
     comment = Comment.objects.get(pk=pk)
     post = comment.post
