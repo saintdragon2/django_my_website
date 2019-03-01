@@ -460,4 +460,47 @@ class TestView(TestCase):
 
         self.assertNotIn('obama', main_div.text)
 
+    def test_edit_comment(self):
+        post_000 = create_post(
+            title='The first post',
+            content='Hello World. We are the world.',
+            author=self.author_000,
+        )
+
+        comment_000 = create_comment(post_000, text='I am president of the US', author=self.user_obama)
+        comment_001 = create_comment(post_000, text='a test comment', author=self.author_000)
+
+        # without login
+        with self.assertRaises(PermissionError):
+            response = self.client.get('/blog/edit_comment/{}/'.format(comment_000.pk))
+
+        # login as smith
+        login_success = self.client.login(username='smith', password='nopassword')
+        self.assertTrue(login_success)
+        with self.assertRaises(PermissionError):
+            response = self.client.get('/blog/edit_comment/{}/'.format(comment_000.pk))
+
+        # login as author of the comment. (Obama)
+        login_success = self.client.login(username='obama', password='nopassword')
+        self.assertTrue(login_success)
+        response = self.client.get('/blog/edit_comment/{}/'.format(comment_000.pk))
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn('Edit Comment: ', soup.body.h3)
+
+        response = self.client.post(
+            '/blog/edit_comment/{}/'.format(comment_000.pk),
+            {'text': 'I was president of the US'},
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertNotIn('I am president of the US', soup.body.text)
+        self.assertIn('I was president of the US', soup.body.text)
+
+
+
+
 
