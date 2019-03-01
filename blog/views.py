@@ -23,6 +23,11 @@ class PostSearch(PostList):
         object_list = Post.objects.filter(Q(title__contains=q) | Q(content__contains=q))
         return object_list
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostSearch, self).get_context_data()
+        context['search_info'] = 'Search: "{}"'.format(self.kwargs['q'])
+        return context
+
 
 class PostDetail(DetailView):
     model = Post
