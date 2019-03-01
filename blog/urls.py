@@ -18,6 +18,7 @@ from . import views
 
 
 urlpatterns = [
+    path('search/<str:q>/', views.PostSearch.as_view()),
     path('tag/<str:slug>/', views.PostListByTag.as_view()),
     path('category/<str:slug>/', views.PostListByCategory.as_view()),
     path('edit_comment/<int:pk>/', views.CommentUpdate.as_view()),

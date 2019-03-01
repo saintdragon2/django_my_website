@@ -95,8 +95,8 @@ class TestModel(TestCase):
 
         self.assertEqual(post_000.tags.count(), 2)   # post는 여러개의 tag를 가질 수 있다.
         self.assertEqual(tag_001.post_set.count(), 2)   # 하나의 tag는 여러개의 post에 붙을 수 있다.
-        self.assertEqual(tag_001.post_set.first(), post_000)    # 하나의 tag는 자신을 가진 post들을 불러올 수 있다.
-        self.assertEqual(tag_001.post_set.last(), post_001) # 하나의 tag는 자신을 가진 post들을 불러올 수 있다.
+        self.assertEqual(tag_001.post_set.first(), post_001)    # 하나의 tag는 자신을 가진 post들을 불러올 수 있다.
+        self.assertEqual(tag_001.post_set.last(), post_000) # 하나의 tag는 자신을 가진 post들을 불러올 수 있다.
 
     def test_post(self):
         category = create_category()
@@ -531,6 +531,33 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertNotIn('I am president of the US', soup.body.text)
         self.assertIn('I was president of the US', soup.body.text)
+
+    def test_search(self):
+        post_000 = create_post(
+            title='Stay Fool, Stay Hungry',
+            content='Amazing Apple story',
+            author=self.author_000
+        )
+
+        post_001 = create_post(
+            title='Trump Said',
+            content='Make America Great Again',
+            author=self.author_000
+        )
+
+        response = self.client.get('/blog/search/Stay Fool/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn(post_000.title, soup.body.text)
+        self.assertNotIn(post_001.title, soup.body.text)
+
+        response = self.client.get('/blog/search/Make America/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn(post_001.title, soup.body.text)
+        self.assertNotIn(post_000.title, soup.body.text)
+
+
 
 
 
