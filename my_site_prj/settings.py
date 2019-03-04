@@ -25,7 +25,7 @@ SECRET_KEY = '#q456865uqa^7+5owax@cuvj&hn9#7hvg5zvv*osutrq7(to#+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['elvislab.com', 'www.elvislab.com', '127.0.0.1', ]
 
 
 # Application definition
