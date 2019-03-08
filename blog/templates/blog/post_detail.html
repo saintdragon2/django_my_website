@@ -49,12 +49,18 @@
     <div class="card my-4">
         <h5 class="card-header">Leave a Comment:</h5>
         <div class="card-body">
+            {% if request.user.is_authenticated %}
             <form method="post" action="{{ object.get_absolute_url }}new_comment/">{% csrf_token %}
                 <div class="form-group">
                     {{ comment_form | crispy }}
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+            {% else %}
+            <button type="button" class="btn btn-outline-dark btn-block" data-toggle="modal" data-target="#loginModal">
+                Log in
+            </button>
+            {% endif %}
         </div>
     </div>
 
